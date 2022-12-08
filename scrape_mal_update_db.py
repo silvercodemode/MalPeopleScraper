@@ -161,14 +161,16 @@ def create_favorites_change_tables(table_name, start_date, end_date):
       cursor.close()
       connection.close()
 
-today_date = date.today() + timedelta(days = 2)
+today_date = date.today()
 today_date_string = str(today_date)
 limit = 0
 # this less than 100000 is just done as a precaution if something weird happens to prevent an infinite loop
 while limit < 100000 and search_page(limit, today_date_string):
   limit += 50
 
+print("today_date=" + str(today_date_string))
 yesterday_date_string = str(today_date - timedelta(days = 1))
+print("yesterday_date=" + yesterday_date_string)
 create_favorites_change_tables("one_day_favorite_diff", yesterday_date_string, today_date_string)
 
 seven_days_ago_date_string = str(today_date - timedelta(days = 7))
