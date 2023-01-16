@@ -85,7 +85,7 @@ def create_favorites_change_tables(table_name, start_date, end_date):
       f"""
         drop table if exists {table_name};
 
-        create table {table_name} as select distinct
+        create table {table_name} as select distinct on (j1.person_id)
         j1.person_id,
         j1.english_name,
         j1.japanese_name,
@@ -168,9 +168,7 @@ limit = 0
 while limit < 100000 and search_page(limit, today_date_string):
   limit += 50
 
-print("today_date=" + str(today_date_string))
 yesterday_date_string = str(today_date - timedelta(days = 1))
-print("yesterday_date=" + yesterday_date_string)
 create_favorites_change_tables("one_day_favorite_diff", yesterday_date_string, today_date_string)
 
 seven_days_ago_date_string = str(today_date - timedelta(days = 7))
