@@ -85,12 +85,12 @@ def create_favorites_change_tables(table_name, start_date, end_date):
       f"""
         drop table if exists {table_name};
 
-        create table {table_name} as select distinct on (j1.person_id)
-        j1.person_id,
-        j1.english_name,
-        j1.japanese_name,
-        j1.mal_link,
-        j1.image_link,
+        create table {table_name} as select distinct on (change, max_f.new_favorite_count, max_f.person_id)
+        max_f.person_id,
+        max_f.english_name,
+        max_f.japanese_name,
+        max_f.mal_link,
+        max_f.image_link,
         j1.old_favorite_count,
         max_f.new_favorite_count,
         (max_f.new_favorite_count - j1.old_favorite_count) change
@@ -132,6 +132,10 @@ def create_favorites_change_tables(table_name, start_date, end_date):
               (
                 select
                 p_max.person_id,
+                p_max.english_name,
+                p_max.japanese_name,
+                p_max.image_link,
+                p_max.mal_link,
                 p_max.favorites new_favorite_count 
                 from
                   people p_max
@@ -150,7 +154,7 @@ def create_favorites_change_tables(table_name, start_date, end_date):
               ) max_f
               on j1.person_id = max_f.person_id
           )
-          order by change desc, new_favorite_count asc;
+          order by change desc, max_f.new_favorite_count asc, max_f.person_id;
       """
     )
     connection.commit()
